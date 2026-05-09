@@ -1,0 +1,18 @@
+CREATE PLUGGABLE DATABASE project_pdb
+ADMIN USER project_pdb_admin IDENTIFIED BY 123
+FILE_NAME_CONVERT = (
+'C:\app\oracledb\oradata\XE\pdbseed',
+'C:\app\oracledb\oradata\XE\project_Pdb\'
+);
+
+SELECT name, open_mode FROM v$pdbs; 
+
+ALTER PLUGGABLE DATABASE project_pdb OPEN; 
+
+ALTER SESSION SET CONTAINER = project_pdb; 
+
+CREATE USER project_user IDENTIFIED BY 123; 
+
+GRANT CONNECT, RESOURCE, DBA TO project_user; 
+
+CONNECT project_user/123@localhost:1521/project_Pdb;
