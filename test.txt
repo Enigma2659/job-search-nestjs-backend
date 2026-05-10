@@ -1,0 +1,317 @@
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/auth/auth.controller.ts)
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/user/user.controller.ts#1-1), lines 1 to 50
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/jobs/jobs.controller.ts#1-1), lines 1 to 50
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/applications/applications.controller.ts)
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/app.module.ts#1-1), lines 1 to 30
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/companies/companies.controller.ts#1-1), lines 1 to 50
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/auth/dto/signup.dto.ts#1-1), lines 1 to 30
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/user/dto/user.dto.ts#1-1), lines 1 to 30
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/jobs/dto/job.dto.ts#1-1), lines 1 to 20
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main)
+
+Read [](file:///c%3A/Users/Enigma%20Sanudi/Downloads/job-search-backend-main%20%283%29/job-search-backend-main/src/applications/dto/create-application.dto.ts)
+
+## Application Overview
+
+This is a **Job Search Backend** built with NestJS and TypeORM (Oracle database). Here's what it does:
+
+### Core Features:
+1. **User Management** - Users can register and manage their profiles
+2. **Company Management** - Companies can create accounts and post jobs
+3. **Job Listings** - Companies post jobs, users browse them
+4. **Job Applications** - Users apply for jobs and track their applications
+
+---
+
+## Architecture & Flow
+
+```
+START → Sign Up/Login → View Jobs → Apply for Jobs → Track Applications
+         (Auth)         (Browse)     (Create App)    (View Status)
+```
+
+### Key Entities:
+- **User** - Job seekers (stored in `user` table)
+- **Company** - Employers
+- **Job** - Job postings
+- **Application** - User applications to jobs
+
+---
+
+## Testing Each Endpoint (Complete Flow)
+
+### **Step 1: Start the Server**
+The app runs on default port (usually 3000 or 3001). Compile and start it:
+```bash
+npm run start:dev
+```
+
+### **Step 2: Test Auth Endpoints** (No Auth Required)
+
+#### **A. Sign Up (User - Job Seeker)**
+```http
+POST http://localhost:6000/auth/signup
+Content-Type: application/json
+
+{
+  "Firstname": "John",
+  "Lname": "Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "DoB": "1990-01-15"
+}
+```
+**Response:** JWT token
+```json
+{
+  "token": "eyJhbGc..."
+}
+```
+
+#### **B. Sign Up (Company)**
+```http
+POST http://localhost:6000/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Tech Corp",
+  "email": "company@techcorp.com",
+  "password": "companypass123"
+}
+```
+
+#### **C. Login**
+```http
+POST http://localhost:6000/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+**Response:** JWT token (save this for authenticated requests)
+
+#### **D. Get Current User Info**
+```http
+GET http://localhost:6000/auth/me?token=<JWT_TOKEN>
+```
+
+---
+
+### **Step 3: Test User Endpoints**
+
+#### **A. Create User (Alternative)**
+```http
+POST http://localhost:6000/user
+Content-Type: application/json
+
+{
+  "Firstname": "Jane",
+  "surname": "Smith",
+  "DoB": "1992-05-20",
+  "password": "secure123"
+}
+```
+
+#### **B. Get All Users**
+```http
+GET http://localhost:6000/user
+```
+
+#### **C. Get User by ID**
+```http
+GET http://localhost:6000/user/1
+```
+
+#### **D. Update User**
+```http
+PUT http://localhost:6000/user/1
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+
+{
+  "Firstname": "Jane",
+  "surname": "Johnson"
+}
+```
+
+#### **E. Delete User**
+```http
+DELETE http://localhost:6000/user/1
+Authorization: Bearer <JWT_TOKEN>
+```
+
+---
+
+### **Step 4: Test Company Endpoints**
+
+#### **A. Create Company**
+```http
+POST http://localhost:6000/companies
+Content-Type: application/json
+
+{
+  "name": "Google",
+  "location": "San Francisco",
+  "jobDescription": "World-class company",
+  "password": "googlepass123"
+}
+```
+
+#### **B. Get All Companies**
+```http
+GET http://localhost:6000/companies
+```
+
+#### **C. Get Company by ID**
+```http
+GET http://localhost:6000/companies/1
+```
+
+#### **D. Update Company**
+```http
+PUT http://localhost:6000/companies/1
+Content-Type: application/json
+
+{
+  "name": "Google Inc",
+  "location": "Mountain View"
+}
+```
+
+#### **E. Delete Company**
+```http
+DELETE http://localhost:6000/companies/1
+```
+
+---
+
+### **Step 5: Test Job Endpoints**
+
+#### **A. Create Job (by Company)**
+```http
+POST http://localhost:6000/jobs
+Content-Type: application/json
+
+{
+  "title": "Senior Developer",
+  "description": "5+ years experience",
+  "location": "Remote",
+  "salary": "120000-150000",
+  "requirements": "Node.js, TypeScript",
+  "jobType": "Full-time",
+  "companyId": 1
+}
+```
+
+#### **B. Get All Jobs**
+```http
+GET http://localhost:6000/jobs
+```
+
+#### **C. Get Job by ID**
+```http
+GET http://localhost:6000/jobs/1
+```
+
+#### **D. Get Job by Title**
+```http
+GET http://localhost:6000/jobs/title/Senior%20Developer
+```
+
+#### **E. Update Job**
+```http
+PUT http://localhost:6000/jobs/1
+Content-Type: application/json
+
+{
+  "title": "Senior Developer - Updated",
+  "salary": "130000-160000"
+}
+```
+
+#### **F. Delete Job**
+```http
+DELETE http://localhost:6000/jobs/1
+```
+
+---
+
+### **Step 6: Test Application Endpoints** (Requires JWT Auth)
+
+#### **A. Apply for Job** ⭐ **Key Endpoint**
+```http
+POST http://localhost:6000/applications
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN_FROM_STEP2>
+
+{
+  "jobId": 1,
+  "coverLetter": "I am very interested in this position..."
+}
+```
+**Response:**
+```json
+{
+  "id": 1,
+  "status": "pending",
+  "coverLetter": "...",
+  "appliedAt": "2026-05-08T10:30:00Z",
+  "userId": 1,
+  "jobId": 1
+}
+```
+
+#### **B. Get My Applications**
+```http
+GET http://localhost:6000/applications/me
+Authorization: Bearer <JWT_TOKEN>
+```
+**Response:** Array of all applications from that user
+
+---
+
+## Complete User Journey Example
+
+```
+1. User signs up:
+   POST /auth/signup → Get JWT token
+   
+2. User views jobs:
+   GET /jobs → See all available positions
+   
+3. User applies:
+   POST /applications → Send application with JWT token
+   
+4. User checks applications:
+   GET /applications/me → See status of all their applications
+   
+5. User updates profile:
+   PUT /user/{id} → Update personal info
+```
+
+---
+
+## Using Postman/REST Client
+
+I recommend testing with:
+- **Postman** - Import collection, manage tokens easily
+- **VS Code REST Client Extension** - Create `.http` files
+- **Thunder Client** - VS Code integrated
+
+**Key Tips:**
+- Save the JWT token from signup/login
+- Add `Authorization: Bearer <TOKEN>` header to protected endpoints
+- The `@UseGuards(JwtAuthGuard)` in code means those endpoints require authentication
+
+Would you like me to explain any specific endpoint or help you test them?

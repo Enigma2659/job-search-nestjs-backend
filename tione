@@ -1,0 +1,220 @@
+{
+  "info": {
+    "name": "Job Search API Demo",
+    "_postman_id": "job-search-api-demo-collection",
+    "description": "Signup, login, create job, apply, get applications",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Signup",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"Firstname\": \"John\",\n  \"Lname\": \"Doe\",\n  \"DoB\": \"1990-01-01\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:6000/auth/signup",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "6000",
+          "path": ["auth", "signup"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"userToken\", pm.response.json().token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:6000/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "6000",
+          "path": ["auth", "login"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"userToken\", pm.response.json().token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Company Signup (for job posting)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Tech Corp\",\n  \"password\": \"companypass\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:6000/auth/signup",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "6000",
+          "path": ["auth", "signup"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"companyToken\", pm.response.json().token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Company Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"Tech Corp\",\n  \"password\": \"companypass\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:6000/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "6000",
+          "path": ["auth", "login"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"companyToken\", pm.response.json().token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Job (as company)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{companyToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Software Engineer\",\n  \"description\": \"Develop and maintain software.\",\n  \"location\": \"Remote\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:6000/jobs",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "6000",
+          "path": ["jobs"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jobId = pm.response.json().id || pm.response.json().job?.id;",
+              "pm.environment.set(\"jobId\", jobId);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Apply to Job (as user)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"jobId\": {{jobId}},\n  \"coverLetter\": \"I am interested in this position.\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:6000/applications",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "6000",
+          "path": ["applications"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Applications for User",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:6000/applications/me",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "6000",
+          "path": ["applications", "me"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [],
+  "variable": []
+}
