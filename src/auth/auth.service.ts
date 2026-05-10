@@ -99,6 +99,36 @@ export class AuthService {
     return { token };
   }
 
+  async validateUser(username: string, password: string): Promise<any> {
+    let user;
+    let type;
+
+    if (username.includes('@')) {
+      user = await this.usersRepository.findOne({ where: { email: username } });
+      type = 'user';
+    } else {
+      user = await this.companiesRepository.findOne({ where: { name: username } });
+      type = 'company';
+    }
+
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordMatched = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatched) {
+      return null;
+    }
+
+    const { password: passwordValue, ...result } = user;
+    return { ...result, id: user.id.toString(), type };
+  }
+
+  async loginUser(user: { id: string; type: string }): Promise<{ token: string }> {
+    const token = this.jwtService.sign({ id: user.id.toString(), type: user.type });
+    return { token };
+  }
+
   async logout() {
     // For JWT, logout is handled on client side
     return { message: 'Logged out' };

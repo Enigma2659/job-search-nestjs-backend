@@ -18,12 +18,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET', 'default-secret'),
+      secretOrKey: configService.get<string>('JWT_SECRET') || 'default-secret',
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload) {
     const { id, type } = payload;
 
     if (type === 'company') {
@@ -31,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       if (!company) {
         throw new UnauthorizedException('Login first to access this endpoint.');
       }
-      return company;
+      return { ...company, type: 'company' };
     }
 
     const user = await this.usersRepository.findOne({ where: { id: parseInt(id) } });
@@ -39,6 +38,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Login first to access this endpoint.');
     }
 
-    return user;
+    const { password, ...safeUser } = user as any;
+    return { ...safeUser, type: 'user' };
   }
 }
